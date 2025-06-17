@@ -87,27 +87,42 @@
       background: #fafafa;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
-      padding: 12px;
+      padding: 8px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
     }
     
-    .deficit-label {
-      font-size: 0.8rem;
+    .deficit-row, .overtime-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .deficit-label, .overtime-label {
+      font-size: 0.75rem;
       font-weight: 500;
       color: #9ca3af;
-      margin-bottom: 4px;
       font-family: 'Calibri', Arial, sans-serif;
     }
     
-    .deficit-value {
-      font-size: 1.1rem;
-      font-weight: 500;
+    .deficit-value, .overtime-value {
+      font-size: 0.9rem;
+      font-weight: 600;
       color: #6b7280;
       font-family: 'Calibri', Arial, sans-serif;
     }
     
     .deficit-value.has-deficit {
       color: #f59e0b;
+    }
+    
+    .overtime-value.has-overtime {
+      color: #059669;
     }
     
     .calendar-section {
@@ -269,8 +284,14 @@
           <div class="today-value" id="today-effective">--</div>
         </div>
         <div class="deficit-card" id="deficit-card">
-          <div class="deficit-label">Deficit</div>
-          <div class="deficit-value" id="deficit-summary">--</div>
+          <div class="deficit-row">
+            <div class="deficit-label">Deficit</div>
+            <div class="deficit-value" id="deficit-summary">--</div>
+          </div>
+          <div class="overtime-row">
+            <div class="overtime-label">Surplus</div>
+            <div class="overtime-value" id="overtime-summary">--</div>
+          </div>
         </div>
       </div>
     </div>
