@@ -1,7 +1,7 @@
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   const tab = tabs[0];
   const url = tab.url || '';
-  const isAttendancePage = /keka\.com\/\#\/me\/attendance\/logs/.test(url);
+  const isAttendancePage = /(\/me\/attendance\/logs|time\/attendance\/logs)$/.test(url);
 
   const calendarSection = document.querySelector('.calendar-section');
   const header = document.getElementById('header-section');
@@ -85,6 +85,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
 function calculateAndDisplayDeficit(logs) {
   let totalDeficit = 0;
+  let totalOvertime = 0;
   const now = new Date();
   const todayNum = now.getDate();
   
@@ -101,27 +102,47 @@ function calculateAndDisplayDeficit(logs) {
       const logDay = parseInt(dateMatch[1]);
       if (logDay < todayNum) {
         const mins = parseMinutes(log.effective);
-        if (mins > 0 && mins < 510) {
-          totalDeficit += (510 - mins);
+        if (mins > 0) {
+          if (mins < 510) {
+            totalDeficit += (510 - mins);
+          } else if (mins > 510) {
+            totalOvertime += (mins - 510);
+          }
         }
       }
     }
   });
   
   const deficitDiv = document.getElementById('deficit-summary');
+  const overtimeDiv = document.getElementById('overtime-summary');
+  
   if (logs.length > 0) {
+    // Update deficit
     if (totalDeficit > 0) {
-      const h = Math.floor(totalDeficit / 60);
-      const m = totalDeficit % 60;
-      deficitDiv.textContent = `${h}h ${m}m`;
+      const deficitH = Math.floor(totalDeficit / 60);
+      const deficitM = totalDeficit % 60;
+      deficitDiv.textContent = `${deficitH}h ${deficitM}m`;
       deficitDiv.classList.add('has-deficit');
     } else {
       deficitDiv.textContent = 'None';
       deficitDiv.classList.remove('has-deficit');
     }
+    
+    // Update overtime/surplus
+    if (totalOvertime > 0) {
+      const overtimeH = Math.floor(totalOvertime / 60);
+      const overtimeM = totalOvertime % 60;
+      overtimeDiv.textContent = `${overtimeH}h ${overtimeM}m`;
+      overtimeDiv.classList.add('has-overtime');
+    } else {
+      overtimeDiv.textContent = 'None';
+      overtimeDiv.classList.remove('has-overtime');
+    }
   } else {
     deficitDiv.textContent = '--';
+    overtimeDiv.textContent = '--';
     deficitDiv.classList.remove('has-deficit');
+    overtimeDiv.classList.remove('has-overtime');
   }
 }
 
